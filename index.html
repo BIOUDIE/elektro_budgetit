@@ -1,19 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Elektro Budgetit</title>
-  <link rel="manifest" href="manifest.json" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ELEKTRO BudgetIT</title>
+  <style>
+    body{font-family:Arial, sans-serif;margin:20px;max-width:500px}
+    h2{text-align:center}
+    input,button{padding:10px;margin:5px 0;width:100%}
+    table{width:100%;border-collapse:collapse;margin-top:15px}
+    th,td{border:1px solid #ddd;padding:8px;text-align:left}
+    th{background:#f4f4f4}
+    .summary{margin-top:15px;font-size:16px;font-weight:700}
+    .app-icon{width:120px;height:120px;margin:20px auto;border-radius:30px;background:#2196f3;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:700;text-align:center;line-height:1.1}
+  </style>
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+    }
+  </script>
 </head>
 <body>
-  <h1>Welcome to Elektro Budgetit</h1>
-  <p>Your smart budgeting companion.</p>
+  <div class="app-icon">ELEKTRO<br>BudgetIT</div>
+  <h2 id="pageTitle">ELEKTRO BudgetIT</h2>
+
+  <input type="text" id="customTitle" placeholder="Enter Budget Title">
+  <input type="number" id="customBudget" placeholder="Enter Total Budget">
+  <button onclick="setBudget()">Set Budget</button>
+
+  <p>Total Budget: ₦<span id="budget">0</span></p>
+
+  <input type="text" id="item" placeholder="Item name">
+  <input type="number" id="price" placeholder="Price">
+  <button onclick="addItem()">Add Item</button>
+
+  <table id="itemsTable">
+    <tr><th>Item</th><th>Price (₦)</th></tr>
+  </table>
+
+  <div class="summary">
+    <p>Total Spent: ₦<span id="totalSpent">0</span></p>
+    <p>Balance: ₦<span id="balance">0</span></p>
+  </div>
+
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(reg => console.log('Service Worker registered:', reg))
-        .catch(err => console.error('Service Worker registration failed:', err));
+    let budget=0,totalSpent=0;
+    function setBudget(){
+      let title=document.getElementById('customTitle').value;
+      let b=parseInt(document.getElementById('customBudget').value);
+      if(title){
+        document.getElementById('pageTitle').innerText=title;
+      }
+      if(b && b>0){
+        budget=b;
+        document.getElementById('budget').innerText=budget;
+        document.getElementById('balance').innerText=budget-totalSpent;
+      }
+    }
+    function addItem(){
+      let it=document.getElementById('item').value;
+      let p=parseInt(document.getElementById('price').value);
+      if(it && p){
+        let table=document.getElementById('itemsTable');
+        let row=table.insertRow();
+        row.insertCell(0).innerText=it;
+        row.insertCell(1).innerText=p;
+        totalSpent+=p;
+        document.getElementById('totalSpent').innerText=totalSpent;
+        document.getElementById('balance').innerText=budget-totalSpent;
+        document.getElementById('item').value='';
+        document.getElementById('price').value='';
+      }
     }
   </script>
 </body>
